@@ -44,22 +44,32 @@ input_data <- read.csv("winequality-white.csv",sep = ",", header = TRUE, strings
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 data.dev <- input_data[1:10,]
+data.dev[,1] <- as.character(data.dev[,1])
+data.dev[,2] <- as.factor(data.dev[,2])
+data.dev$log <- as.logical(sample(2, size = nrow(data.dev), replace = TRUE)-1)
 
-cleanfiledata <-   as.data.frame(data.dev[complete.cases(data.dev),])
+#create random NULL in dataframe data.dev
+nr <- nrow(data.dev); nc <- ncol(data.dev)
+p <- .8 ## desired total proportion of NA's
 
-cleanme <- function(dataname){
+ina <- is.na(unlist(data.dev)) ## logical vector, TRUE corresponds to NA positions
+n2 <- floor(p*nr*nc) - sum(ina)  ## number of new NA's
 
-  
-  
-}
-
-
-plot_missing(input_data)
+ina[sample(which(!is.na(ina)), n2)] <- TRUE
+data.dev[matrix(ina, nr=nr,nc=nc)]<- NA ## using matrix indexing
 
 
-redfac.1 <- reduceThFactors(input_data, "quality")
-redNu.1 <- reduceThNull(input_data, "quality")
-conFtN <- convertFactorToNumeric(input_data, "quality")
+plot_missing(data.dev)
+
+
+test <- replaceThNull(dataset = data.dev, replaceText = "test", numericMethod = "zero")
+
+
+
+
+
+
+
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 #
@@ -113,6 +123,64 @@ reduceThNull <- function(dataset, yvar, threshold = 40, omitRest = FALSE){
     dataset <- na.omit(dataset)
     print("Nulls omitted")
   }
+  
+  return(dataset)
+  
+}
+
+# make built in function to replace null containing columns in a dataset
+replaceNull <- function(dataset, yvar = "", replaceText = "unknown", numericMethod = "median"){
+  # Exception handling & preprocessing missing
+  #
+  #dataset: numeric matrix of data
+  #yvar: dependent variable
+  #replaceText: text which is the replacement for NA in text/factor classes 
+  #numericMethod: method to apply for replacing numeric predictors; allowed values: median, average, zero
+
+  for(colnr in 1:ncol(dataset)){
+    if(colnames(dataset)[colnr] != yvar){
+      
+      # mutate missing values
+      
+      # numeric classes
+      if(class(dataset[,colnr]) %in% c("integer", "double","numeric")){
+        print("replace numeric")
+        if(numericMethod == "median"){
+          dataset[,colnr] <- replace(dataset[,colnr], is.na(dataset[,colnr]), median(dataset[,colnr], na.rm = TRUE))
+        }else if(numericMethod == "mean"){
+          dataset[,colnr] <- replace(dataset[,colnr], is.na(dataset[,colnr]), mean(dataset[,colnr], na.rm = TRUE))
+        }else if(numericMethod == "zero"){
+          dataset[,colnr] <- replace(dataset[,colnr], is.na(dataset[,colnr]), 0)
+        }else{
+          print(paste("Method ",numericMethod, " invalid. Valid values for numeric replacment are: median, mean, zero"))
+        }
+      }
+      
+      # logical classes
+      if(class(dataset[,colnr]) %in% c("logical")){
+        print("replace logical")
+        dataset[,colnr] <- replace(dataset[,colnr], is.na(dataset[,colnr]), median(dataset[,colnr], na.rm = TRUE))
+      }
+      
+      # text classes
+      if(class(dataset[,colnr]) %in% c("character")){
+        print("replace text")
+        dataset[,colnr] <- replace(dataset[,colnr], is.na(dataset[,colnr]), replaceText)
+      }
+      
+      # factor classes
+      if(class(dataset[,colnr]) %in% c("factor")){
+        print("replace factor")
+        dataset[,colnr] <- as.character(dataset[,colnr])
+        dataset[,colnr] <- replace(dataset[,colnr], is.na(dataset[,colnr]), replaceText)
+        dataset[,colnr] <- as.factor(dataset[,colnr])
+      }
+
+      
+      
+    }
+  }
+
   
   return(dataset)
   
@@ -229,10 +297,23 @@ useHC <- function(data = data, method = "euclidean", k = 3, predictors = TRUE, h
 }
 
 
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+#
+# Do preprocessing                                                                    #######
+#
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+
+plot_missing(input_data)
+
+glimpse(input_data)
+
+
+
+
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 #
-# Run functions                                                                       #######
+# Run ML functions                                                                    #######
 #
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
