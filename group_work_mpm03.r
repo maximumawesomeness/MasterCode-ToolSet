@@ -57,7 +57,9 @@ cleanme <- function(dataname){
 plot_missing(input_data)
 
 
-
+redfac.1 <- reduceThFactors(input_data, "quality")
+redNu.1 <- reduceThNull(input_data, "quality")
+conFtN <- convertFactorToNumeric(input_data, "quality")
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 #
@@ -89,7 +91,7 @@ reduceThFactors <- function(dataset, yvar, threshold = 10, varTypes = c("integer
 
 # make built in function to reduce null containing columns in a dataset to a threshold
 # threshold set based on plot_missing
-reduceThNull <- function(dataset, yvar, threshold = 40, lending_dataset.train, omitRest = FALSE){
+reduceThNull <- function(dataset, yvar, threshold = 40, omitRest = FALSE){
   
   # reduce number of predictors, remove factors with more percentage of null observations then threshold (th)
   # transform characters to numeric
@@ -121,6 +123,7 @@ convertFactorToNumeric <- function(dataset, yvar){
   
   for(colnr in 1:ncol(dataset)){
     if(class(dataset[,colnr]) %in% c('factor') && colnames(dataset)[colnr] != as.character(yvar)){
+      print(paste("IS factor and gets converted to numeric", colnames(dataset)[colnr]))
       dataset[,colnr] <- as.numeric(dataset[,colnr])
     }
   }
