@@ -18,6 +18,7 @@ library("factoextra")
 library("ggplot2") # Data visualization
 library("readr") # CSV file I/O, e.g. the read_csv function
 library("RColorBrewer")
+library("DataExplorer")
 
 # get rid of old stuff
 rm(list=ls()) # clear environment
@@ -38,19 +39,101 @@ input_data <- read.csv("winequality-white.csv",sep = ",", header = TRUE, strings
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 #
-# Test dataset                                                                        #######
+# Test dataset & playground                                                           #######
 #
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
-data <- input_data[,1:10]
+data.dev <- input_data[1:10,]
+
+cleanfiledata <-   as.data.frame(data.dev[complete.cases(data.dev),])
+
+cleanme <- function(dataname){
+
+  
+  
+}
+
+
+plot_missing(input_data)
+
+
 
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 #
-# Create functions                                                                    #######
+# Create preprocessing functions                                                      #######
 #
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
+# make built in function to reduce the number of factros in a dataset to a threshold
+reduceThFactors <- function(dataset, yvar, threshold = 10, varTypes = c("integer", "double", "logical", "numeric")){
+  
+  # reduce number of predictors, remove factors with more unique observations then threshold (th)
+  # transform characters to numeric
+  dim(dataset)
+  red <- c()
+  for(colnr in 1:ncol(dataset)){
+    if(!class(dataset[,colnr]) %in% varTypes && length(unique(dataset[,colnr]))> threshold && colnames(dataset)[colnr] != as.character(yvar)){
+      print(paste("Is", colnames(dataset)[colnr],"in varType list '", class(dataset[,colnr]), "' and has more than ", threshold, "uniques: ", length(unique(dataset[,colnr]))))
+      red <- append(red,c(-1*colnr))
+    }
+  }
+  
+  print(red)
+  if(!is.null(red)){dataset <- dataset[,red]}
+  print(paste("Col Nr: ",colnr, "     -      reduced by: ", length(red), "                - dims: ",dim(dataset)))
+  dim(dataset)
+  return(dataset)
+  
+}
+
+# make built in function to reduce null containing columns in a dataset to a threshold
+# threshold set based on plot_missing
+reduceThNull <- function(dataset, yvar, threshold = 40, lending_dataset.train, omitRest = FALSE){
+  
+  # reduce number of predictors, remove factors with more percentage of null observations then threshold (th)
+  # transform characters to numeric
+  dim(dataset)
+  red <- c()
+  for(colnr in 1:ncol(dataset)){
+    perNull <- 100 / length(dataset[,colnr]) * sum(is.na(dataset[,colnr]))
+    if(perNull > threshold && colnames(dataset)[colnr] != as.character(yvar)){
+      print(paste("Has", colnames(dataset)[colnr]," more Nulls '(", sum(is.na(dataset[,colnr])), " -> ", perNull, "%" ,")' than threshold: ", threshold))
+      red <- append(red,c(-1*colnr))
+    }
+  }
+  print(red)
+  if(!is.null(red)){dataset <- dataset[,red]}
+  print(paste("Col Nr: ",colnr, "     -      reduced by: ", length(red), "                - dims: ",dim(dataset)))
+  dim(dataset)
+  
+  if(omitRest){
+    dataset <- na.omit(dataset)
+    print("Nulls omitted")
+  }
+  
+  return(dataset)
+  
+}
+
+# make built in function to convert factors to numeric variables
+convertFactorToNumeric <- function(dataset, yvar){
+  
+  for(colnr in 1:ncol(dataset)){
+    if(class(dataset[,colnr]) %in% c('factor') && colnames(dataset)[colnr] != as.character(yvar)){
+      dataset[,colnr] <- as.numeric(dataset[,colnr])
+    }
+  }
+  
+  return(dataset)
+  
+}
+
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+#
+# Create ML functions                                                                 #######
+#
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 # KMEans
 useKMeans <- function(data = data, k = 4, nstart = ncol(data), plotDimIndexX = 0, plotDimIndexY = 0){
@@ -84,6 +167,8 @@ useKMeans <- function(data = data, k = 4, nstart = ncol(data), plotDimIndexX = 0
   #}
   
   #plot(1:k, wss, type="b", xlab="Number of Clusters",ylab="Total within-cluster sum of squares")
+  
+  return(km.out)
   
   
 }
@@ -128,12 +213,14 @@ useHC <- function(data = data, method = "euclidean", k = 3, predictors = TRUE, h
     hc.T <- hclust(dist(t(scaled_data), method = method))
     dend.T <- as.dendrogram(hc.T)
     plot(dend.T)
+    return(hc.T)
   }
   
   # create heatmap
   if(heatmap){
     heatmap(scaled_data)
   }
+  return(hc)
   
   
 }
@@ -147,7 +234,7 @@ useHC <- function(data = data, method = "euclidean", k = 3, predictors = TRUE, h
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 # run KMeans with parameters
-useKMeans(input_data, 2, plotDimIndexX = 1, plotDimIndexY = 2)
+kmeans.df <- useKMeans(input_data, 2, plotDimIndexX = 1, plotDimIndexY = 2)
 
 # run hierarchical clustering
-useHC(input_data, method = "euclidean", predictors = TRUE, k = 3, heatmap = TRUE)
+df.HCT <- useHC(input_data, method = "euclidean", predictors = TRUE, k = 3, heatmap = TRUE)
