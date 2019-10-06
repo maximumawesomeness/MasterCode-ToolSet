@@ -1,17 +1,26 @@
 # Crazy Data Science Toolset for Unsupervised Data Daten
 
-https://drive.google.com/drive/u/0/folders/16FiRr6PP50Mi500jnsHY2Y7An2gt6i1-
+Toolbox to apply unsupervised learning methods with R in Shiny by students of 
+ [Master of Applied Information and Data Science](https://www.hslu.ch/en/lucerne-school-of-business/degree-programmes/master/applied-information-and-data-science/) at Hochschule Luzern.
 
 
-## Contributors
-Ronny Maurhofer
-Stephana Müller
-Adeline Bornatico
-Luis Limonta
-Tanja Schär
+## Team
+- Ronny Maurhofer
+- [Stephana Müller](https://github.com/pandorrasland)
+- Adeline Bornatico
+- Luis Limonta
+- Tanja Schär
 
 ## Documentation
 
-Hello 
+- [Dataset](https://drive.google.com/drive/u/0/folders/16FiRr6PP50Mi500jnsHY2Y7An2gt6i1-)
+- [Quickcode](https://codeshare.io/29np80)
+
+
+## Goal
+- offer R Toolbox to apply different unsupervised machine learning algorithms that work with almost any input datasets
+- how to use these machine learning algorithms
+- how to interprete the results, supported with our wine data set example
+
 
 
