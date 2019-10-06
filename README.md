@@ -1,8 +1,8 @@
-#TITLE
+# TITLE
 
 Hello
 
-#Contributors
+## Contributors
 Ronny Maurhofer
 Stephana Müller
 Adeline Bornatico
