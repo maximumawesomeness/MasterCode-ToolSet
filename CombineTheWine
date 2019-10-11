@@ -1,0 +1,16 @@
+#read white
+white <- read.csv("winequality-white.csv")
+#add wine.type: White=1
+white$wine.type<-1
+
+red <- read.csv("winequality-red.csv")
+#add wine.type: Red=2
+red$wine.type<-2
+
+#combine wine
+wine.combined <- dplyr::union(white, red)
+
+#write csv
+write.csv(wine.combined, file = "wine.csv")
+
+#putitongoogledrive: https://drive.google.com/drive/u/0/folders/16FiRr6PP50Mi500jnsHY2Y7An2gt6i1- 
