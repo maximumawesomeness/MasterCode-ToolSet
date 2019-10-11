@@ -19,11 +19,11 @@ library("ggplot2") # Data visualization
 library("readr") # CSV file I/O, e.g. the read_csv function
 library("RColorBrewer")
 library("DataExplorer")
-library("dplyr")
+library("kohonen")
 library("checkpoint")
 
-#reproducability - insert date
-checkpoint(snapshotDate="2019-10-10")
+#checkpoint("2019-09-20")
+
 # get rid of old stuff
 rm(list=ls()) # clear environment
 par(mfrow=c(1,1)) # set plotting window to default
@@ -82,7 +82,7 @@ test <- replaceThNull(dataset = data.dev, replaceText = "test", numericMethod = 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 # make built in function to reduce the number of factros in a dataset to a threshold
-reduceThFactors <- function(dataset, yvar, threshold = 10, varTypes = c("integer", "double", "logical", "numeric")){
+reduceThFactors <- function(dataset, yvar = "", threshold = 10, varTypes = c("integer", "double", "logical", "numeric")){
   
   # reduce number of predictors, remove factors with more unique observations then threshold (th)
   # transform characters to numeric
@@ -91,7 +91,13 @@ reduceThFactors <- function(dataset, yvar, threshold = 10, varTypes = c("integer
   for(colnr in 1:ncol(dataset)){
     if(!class(dataset[,colnr]) %in% varTypes && length(unique(dataset[,colnr]))> threshold && colnames(dataset)[colnr] != as.character(yvar)){
       print(paste("Is", colnames(dataset)[colnr],"in varType list '", class(dataset[,colnr]), "' and has more than ", threshold, "uniques: ", length(unique(dataset[,colnr]))))
-      red <- append(red,c(-1*colnr))
+      if(!replaceFactors){
+        red <- append(red,c(-1*colnr))
+      }else{
+        dataset[,colnr] <- replace(dataset[,colnr], is.na(dataset[,colnr]), median(dataset[,colnr], na.rm = TRUE))
+      }
+        
+      
     }
   }
   
@@ -105,7 +111,7 @@ reduceThFactors <- function(dataset, yvar, threshold = 10, varTypes = c("integer
 
 # make built in function to reduce null containing columns in a dataset to a threshold
 # threshold set based on plot_missing
-reduceThNull <- function(dataset, yvar, threshold = 40, omitRest = FALSE){
+reduceThNull <- function(dataset, yvar = "", threshold = 40, omitRest = FALSE){
   
   # reduce number of predictors, remove factors with more percentage of null observations then threshold (th)
   # transform characters to numeric
@@ -191,11 +197,25 @@ replaceNull <- function(dataset, yvar = "", replaceText = "unknown", numericMeth
 }
 
 # make built in function to convert factors to numeric variables
-convertFactorToNumeric <- function(dataset, yvar){
+convertFactorToNumeric <- function(dataset, yvar = ""){
   
   for(colnr in 1:ncol(dataset)){
     if(class(dataset[,colnr]) %in% c('factor') && colnames(dataset)[colnr] != as.character(yvar)){
       print(paste("IS factor and gets converted to numeric", colnames(dataset)[colnr]))
+      dataset[,colnr] <- as.numeric(dataset[,colnr])
+    }
+  }
+  
+  return(dataset)
+  
+}
+
+# make built in function to convert factors to numeric variables
+convertStringToFactor <- function(dataset, yvar = ""){
+  
+  for(colnr in 1:ncol(dataset)){
+    if(class(dataset[,colnr]) %in% c('charachter') && colnames(dataset)[colnr] != as.character(yvar)){
+      print(paste("Is String and gets converted to factor", colnames(dataset)[colnr]))
       dataset[,colnr] <- as.numeric(dataset[,colnr])
     }
   }
@@ -211,7 +231,7 @@ convertFactorToNumeric <- function(dataset, yvar){
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 # KMEans
-useKMeans <- function(data = data, k = 4, nstart = ncol(data), plotDimIndexX = 0, plotDimIndexY = 0){
+useKMeans <- function(data, k = 4, nstart = ncol(data), plotDimIndexX = 0, plotDimIndexY = 0){
   # Exception handling & preprocessing missing
   #
   #data: numeric matrix of data
@@ -249,7 +269,7 @@ useKMeans <- function(data = data, k = 4, nstart = ncol(data), plotDimIndexX = 0
 }
 
 # Hierarchical clsutering
-useHC <- function(data = data, method = "euclidean", k = 3, predictors = TRUE, heatmap = TRUE){
+useHC <- function(data, method = "euclidean", k = 3, predictors = TRUE, heatmap = TRUE){
   # Exception handling & preprocessing missing
   #
   #data: numeric matrix of data
@@ -300,6 +320,27 @@ useHC <- function(data = data, method = "euclidean", k = 3, predictors = TRUE, h
   
 }
 
+# Self organizing Maps
+useSOM <- function(data = data, colors = c("red", "black", "blue"), xdim = 5, ydin = 5, topo="hexagonal"){
+  
+  data_unique <- as.matrix(scale(unique(data)))
+  
+  # For plotting evaluation against colorcode
+  # category (~ classification solution)
+  row_label <- as.factor(rownames(data))
+  #colors <- colors[as.numeric(iris$Species)]
+  data_train_matrix <- as.matrix(scale(data))
+  
+  # Define the neuronal grid
+  som_grid <- somgrid(xdim = xdim, ydim = ydim, topo = topo)
+  
+  # Train the model
+  som_model <- som(data_train_matrix,grid=som_grid,rlen=1000,alpha=c(0.05,0.01),keep.data = TRUE)
+  
+  return(som_model)
+  
+}
+
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 #
@@ -326,3 +367,6 @@ kmeans.df <- useKMeans(input_data, 2, plotDimIndexX = 1, plotDimIndexY = 2)
 
 # run hierarchical clustering
 df.HCT <- useHC(input_data, method = "euclidean", predictors = TRUE, k = 3, heatmap = TRUE)
+
+som_model <- useSOM(input_data, colors = c("red", "black", "blue"), xdim = 5, ydin = 5, topo="hexagonal")
+
