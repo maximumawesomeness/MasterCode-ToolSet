@@ -20,7 +20,10 @@ library("readr") # CSV file I/O, e.g. the read_csv function
 library("RColorBrewer")
 library("DataExplorer")
 library("dplyr")
+library("checkpoint")
 
+#reproducability - insert date
+checkpoint(snapshotDate="2019-10-10")
 # get rid of old stuff
 rm(list=ls()) # clear environment
 par(mfrow=c(1,1)) # set plotting window to default
