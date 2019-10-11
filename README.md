@@ -5,11 +5,11 @@ Toolbox to apply unsupervised learning methods with R in Shiny by students of
 
 
 ## Team
-- Ronny Maurhofer
+- [Ronny Maurhofer](https://github.com/ronnym20)
 - [Stephana Müller](https://github.com/pandorrasland)
-- Adeline Bornatico
-- Luis Limonta
-- Tanja Schär
+- [Adeline Bornatico](https://github.com/Chruetji)
+- [Luis Limonta](https://github.com/luislimonta) 
+- [Tanja Schär](https://github.com/maximumawesomeness)
 
 ## Documentation
 
