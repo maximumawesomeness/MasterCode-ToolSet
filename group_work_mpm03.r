@@ -19,6 +19,7 @@ library("ggplot2") # Data visualization
 library("readr") # CSV file I/O, e.g. the read_csv function
 library("RColorBrewer")
 library("DataExplorer")
+library("dplyr")
 
 # get rid of old stuff
 rm(list=ls()) # clear environment
