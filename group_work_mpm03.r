@@ -82,7 +82,7 @@ test <- replaceThNull(dataset = data.dev, replaceText = "test", numericMethod = 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 # make built in function to reduce the number of factros in a dataset to a threshold
-reduceThFactors <- function(dataset, yvar = "", threshold = 10, varTypes = c("integer", "double", "logical", "numeric")){
+reduceThFactors <- function(dataset, yvar = "", threshold = 10, replaceFactors = TRUE, varTypes = c("integer", "double", "logical", "numeric")){
   
   # reduce number of predictors, remove factors with more unique observations then threshold (th)
   # transform characters to numeric
@@ -214,9 +214,9 @@ convertFactorToNumeric <- function(dataset, yvar = ""){
 convertStringToFactor <- function(dataset, yvar = ""){
   
   for(colnr in 1:ncol(dataset)){
-    if(class(dataset[,colnr]) %in% c('charachter') && colnames(dataset)[colnr] != as.character(yvar)){
+    if(class(dataset[,colnr]) %in% c('character') && colnames(dataset)[colnr] != as.character(yvar)){
       print(paste("Is String and gets converted to factor", colnames(dataset)[colnr]))
-      dataset[,colnr] <- as.numeric(dataset[,colnr])
+      dataset[,colnr] <- as.factor(dataset[,colnr])
     }
   }
   
