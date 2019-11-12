@@ -63,9 +63,16 @@ fluidPage(
                
                # Main panel for displaying outputs ----
                mainPanel(
-                 
+                 h4("Data Source"),
+               "The database is about the quality of the wines and its characteristics which include 13 parameters about containing sugar, pH, acidity etc.. Further information about the open data source and its characteristics can be found here: https://s3.amazonaws.com/udacity-hosted-downloads/ud651/wineQualityInfo.txt. The 13th variable is about the wine type (white=1, red=2) as we have combined the white and red data set. Reason: Interesting correlations might be missed otherwise and differentiating because of colours seems somewhat old fashioned.
+",
+               tags$hr(),
                  # Output: Data file ----
-                 tableOutput("contents")
+                 tableOutput("contents"),
+               tags$hr(),
+               h4("Data Set"),
+               "The data set doesn’t contain NA values. All the values are numeric. It contains 14 columns (including the index)."
+              
                  
                )
                
@@ -100,6 +107,12 @@ fluidPage(
              mainPanel(
                tabsetPanel(
                  tabPanel("Plots",
+                          h4("K-means"),
+                          "K-Means is an unsupervised, parametric method (need to only pre-specify K number of clusters. The possibility to define the number of clusters can be an advantage in certain situations.
+
+It is a simple way to group data based on similar properties as only a few assumptions are needed. Due to a certain randomness of the algorithm, output can be different with each time the user runs the code. This needs to be considered for interpretation reasons.
+",
+                          tags$hr(),
                           #h4("Scree Plot"),
                           plotOutput("distPlot"),
                           pre(includeText("KPlotScree.txt")),
@@ -174,6 +187,15 @@ fluidPage(
                tabsetPanel(
                  # tab Plots ----
                  tabPanel("Plots",
+                          h4("HC"),
+                          "HC is short for Hierarchical Clustering. It is an Unsupervised, non-parametric method (no labelled data needed) where no assumptions are needed. In comparison to K-Means, there is  no need to specify K number of clusters beforehand. 
+
+The Transposed Dendogram plot shows the distance between the predictors: The lower the altitude of a branch is, the closer the predictors are to each other. Choice of where to cut the dendrogram is not always clear
+
+Height of cut has comparable role as the K in K-means and controls the number of clusters obtained.
+
+With the Matrix of Dissimilarity the similarity in the dataset can be evaluated. Diagonal members equal zero dissimilarity",
+                          tags$hr(),
                           
                           plotOutput("dendPlot",width = "120%",height="800px"),
                           pre(includeText("HCPlotDend.txt")),
@@ -221,6 +243,13 @@ fluidPage(
                tabsetPanel(
                  # Tab plot ----
                  tabPanel("Plots",
+                          h4("PCA"),
+                          "Unsupervised, linear, non-parametric method. This method is especially meaningful with datasets of more than three dimension as it  reduces dimensionality of a dataset. It is used for grouping variables with similar behaviour and there’s no need for assumptions. The output is easily interpretable as the dimensions got reduced. ",
+                          tags$hr(),
+                          
+                          
+                          
+                          
                           plotOutput("biPlot",width = "130%",height="800px"),
                           sliderInput("slider_midpoint", "midpoint:", 0, 10 , 0.5,step = 0.1),
                           pre(includeText("pcaPlotBiplot.txt")),
@@ -276,6 +305,11 @@ fluidPage(
              mainPanel(
                tabsetPanel(
                  tabPanel("Plots",
+                          h4("tSNE"),
+                          "Here we have an unsupervised, non-linear, parametric method for dimensionality reduction useful for Exploration & visualization of data and well-suited for high-dimensional data. tSNE minimizes the difference between the similarity of points in high & in low-dimensional space. It is easy to apply but not always intuitive to interpret the plots. The output can be different with every time the user runs the code.Distances have (almost) no meaning.",
+                          tags$hr(),
+                          
+                          
                           plotOutput("tSNEPlot",width = "130%",height="800px"),
                           pre(includeText("tSNEPlottSNE.txt"))
                  ),
@@ -317,6 +351,15 @@ fluidPage(
              mainPanel(
                tabsetPanel(
                  tabPanel("Plots",
+                          h4("SOMs"),
+                          "SOM is an unsupervised, nonlinear, parametric method and can be considered as an artificial neural network. It includes mapping from a higher-dimensional input space to a lower-dimensional map space with competitive learning and therefore reduces dimensionality of a datasets. Neural network uses competitive learning. It is used for data visualization of high-dimensional data. This method is somewhat similar to K-means (SOMs with a small number of nodes behave similar to K-means) and similar to PCA as it can be considered to be a nonlinear generalization of PCA.",
+                          tags$hr(),
+
+                          
+                          
+                          
+                          
+                          
                           plotOutput("somsPlot.change"),
                           pre(includeText("somsPlotChange.txt")),
                           plotOutput("somsPlot.count"),
