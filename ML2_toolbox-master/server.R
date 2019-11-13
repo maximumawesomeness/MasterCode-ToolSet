@@ -9,6 +9,7 @@ library(Rtsne)
 library("factoextra")
 library(kohonen)
 library(ggplot2)
+library(plotly)
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 #
@@ -414,8 +415,6 @@ function(input, output,session) {
     rest.data <- convertFactorToNumeric(rest.data)
     rest.data.matrix <- as.matrix(scale(rest.data))
     
-  
-    
     return(rest.data.matrix)
     
   })
@@ -439,7 +438,7 @@ function(input, output,session) {
 
   
   # Plot output ----
-  output$tSNEPlot <- renderPlot({
+  output$tSNEPlot <- renderPlotly({
     
     cat.data <- select.tsne.col.data()
     rest.data.matrix <- select.tsne.rest.data.matrix()
@@ -459,10 +458,16 @@ function(input, output,session) {
                   perplexity=perplexity, verbose=TRUE,
                   max_iter = max_iter)
     
+    tsne.df <- data.frame(tsne$Y)
+    
     # Plot data and labels:
-    plot(tsne$Y)
-    text(tsne$Y, labels=row_label,
-         col=colors[row_label])
+    # plot(tsne$Y)
+    # text(tsne$Y, labels=row_label,
+    #      col=colors[row_label])
+   
+    p<- plot_ly()
+    p <- add_trace(p, x = tsne.df$X1, y =tsne.df$X2, z=tsne.df$X3, color=as.factor(cat.data) )
+    p
     
   })
 

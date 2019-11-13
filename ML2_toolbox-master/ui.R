@@ -310,7 +310,7 @@ With the Matrix of Dissimilarity the similarity in the dataset can be evaluated.
                           tags$hr(),
                           
                           
-                          plotOutput("tSNEPlot",width = "130%",height="800px"),
+                          plotlyOutput("tSNEPlot", width = "130%"),
                           pre(includeText("tSNEPlottSNE.txt"))
                  ),
                  tabPanel("Informations",
