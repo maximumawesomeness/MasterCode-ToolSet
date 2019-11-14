@@ -235,15 +235,11 @@ function(input, output,session) {
     return (df[, c(input$xcol, input$ycol)])
   })
   
-  selectedDataAll <- reactive({
-    df <- readData()
-    return (df[])
-  })
-  
+
 #calculate kmeans to the selected dataset, cluster and nstart  ----
   clusters <- reactive({
     set.seed(3)
-    kmeans(selectedData(), input$clusters, input$slider_nstart)
+    kmeans(readData(), input$clusters, input$slider_nstart)
   })
   
 #Plot the results of the calculated kmeans ----
@@ -261,7 +257,7 @@ function(input, output,session) {
 #To analyse how many cluster do we want ----
   wss <- reactive({
     set.seed(3)
-    sapply(1:input$slider_k, function(i){return(kmeans(selectedDataAll(),centers = i,nstart=input$slider_nstart)$tot.withinss)})
+    sapply(1:input$slider_k, function(i){return(kmeans(readData(),centers = i,nstart=input$slider_nstart)$tot.withinss)})
   })
   
   
