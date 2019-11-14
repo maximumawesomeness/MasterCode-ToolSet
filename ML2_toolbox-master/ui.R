@@ -71,7 +71,7 @@ fluidPage(
                  tableOutput("contents"),
                tags$hr(),
                h4("Data Set"),
-               "The data set doesn’t contain NA values. All the values are numeric. It contains 14 columns (including the index)."
+               "The data set doesn't contain NA values. All the values are numeric. It contains 14 columns (including the index)."
               
                  
                )
@@ -310,7 +310,8 @@ With the Matrix of Dissimilarity the similarity in the dataset can be evaluated.
                           tags$hr(),
                           
                           
-                          plotlyOutput("tSNEPlot", width = "130%"),
+                          ## Error message: function plotlyOutput not found
+                          #plotlyOutput("tSNEPlot", width = "130%"),
                           pre(includeText("tSNEPlottSNE.txt"))
                  ),
                  tabPanel("Informations",

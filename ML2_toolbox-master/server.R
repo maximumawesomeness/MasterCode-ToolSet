@@ -192,7 +192,6 @@ function(input, output,session) {
  return(df)
     
   })
-
   
 # Create table to visualize the data set
   output$contents <- renderTable({
@@ -236,6 +235,11 @@ function(input, output,session) {
     return (df[, c(input$xcol, input$ycol)])
   })
   
+  selectedDataAll <- reactive({
+    df <- readData()
+    return (df[])
+  })
+  
 #calculate kmeans to the selected dataset, cluster and nstart  ----
   clusters <- reactive({
     kmeans(selectedData(), input$clusters, input$slider_nstart)
@@ -255,13 +259,16 @@ function(input, output,session) {
   
 #To analyse how many cluster do we want ----
   wss <- reactive({
-    sapply(1:input$slider_k, function(i){return(kmeans(selectedData(),centers = i,nstart=input$slider_nstart)$tot.withinss)})
+    sapply(1:input$slider_k, function(i){return(kmeans(selectedDataAll(),centers = i,nstart=input$slider_nstart)$tot.withinss)})
+    #sapply(1:input$slider_k, function(i){return(kmeans(selectedData(),centers = i,nstart=input$slider_nstart)$tot.withinss)})
   })
   
   
 # Scree Plot   ----
   output$distPlot <- renderPlot({
     plot(1:input$slider_k, wss(), type="b", xlab="Number of Clusters",ylab="Total within-cluster sum of squares",main="Scree Plot")
+    text(1:input$clusters, wss()[1:input$clusters], round(wss(),digits=2)[1:input$clusters], cex=1, pos=4, col="blue")
+    #text(1:3, km.out$withinss[1:3], round(km.out$withinss,digits=2)[1:3], cex=0.6, pos=1, col="blue")
     
   })  
   
