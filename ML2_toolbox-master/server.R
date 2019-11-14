@@ -242,6 +242,7 @@ function(input, output,session) {
   
 #calculate kmeans to the selected dataset, cluster and nstart  ----
   clusters <- reactive({
+    set.seed(3)
     kmeans(selectedData(), input$clusters, input$slider_nstart)
   })
   
@@ -259,8 +260,8 @@ function(input, output,session) {
   
 #To analyse how many cluster do we want ----
   wss <- reactive({
+    set.seed(3)
     sapply(1:input$slider_k, function(i){return(kmeans(selectedDataAll(),centers = i,nstart=input$slider_nstart)$tot.withinss)})
-    #sapply(1:input$slider_k, function(i){return(kmeans(selectedData(),centers = i,nstart=input$slider_nstart)$tot.withinss)})
   })
   
   
