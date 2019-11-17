@@ -1,0 +1,4 @@
+The training curve displays a smooth, almost linear progress without steps as it should be. 
+Therefore the number of notes seem to be a good choise.
+The line however seems to be continuely decreasing and not to reach a minimum plateau.
+By increasing the number of iterations, we could still improve the distances.
