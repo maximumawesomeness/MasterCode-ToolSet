@@ -11,6 +11,8 @@ library(kohonen)
 library(ggplot2)
 library(plotly)
 
+set.seed(4)
+
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 #
 # Create preprocessing functions                                                      #######----
