@@ -41,7 +41,7 @@ fluidPage(
                               choices = c(Comma = ",",
                                           Semicolon = ";",
                                           Tab = "\t"),
-                              selected = ","),
+                              selected = ";"),
                  
                  # Input: Select quotes ----
                  radioButtons("quote", "Quote",
@@ -211,19 +211,23 @@ With the Matrix of Dissimilarity the similarity in the dataset can be evaluated.
                  tabPanel("Informations",
                           
                           h4("What it is:"),
-                          "Unsupervised, parametric method (need to pre-specify K number of clusters).",
-                          
-                          
-                          h4("When:"),
-                          "First exploration of multidimensional data (few assumptions needed, i.e., K).",
+                          "Hierarchical Clustering in short (HC)
+          Unsupervised, non-parametric method (no need labelled data)
+          Definition: Hierarchical clustering, also known as hierarchical cluster analysis, 
+          is an algorithm that groups similar objects into groups called clusters. 
+          The endpoint is a set of clusters, where each cluster is distinct from each other cluster, 
+          and the objects within each cluster are broadly similar to each other.
+          'Better' than K-means clustering, no need to specify K number of clusters a priori (goes through all Ks).
+          Source: https://www.displayr.com/what-is-hierarchical-clustering/",
+                          h4("When to use it:"),
+                          "First exploration of multidimensional data (no assumptions needed). 'Data driven!'",
                           h4("What it does:"),
-                          "Groups data based on their similarity, the resulting clusters have similar properties
-                          Push the data into K pre-determined categories (can be an advantage in certain situations)",
+                          "Groups data based on their similarity, the resulting clusters have similar properties",
                           h4("How it does this"),
-                          
-                          "Choose a number K of cluster centers
-                          Place the centers randomly in the data space (initial cluster assignment)
-                          Iteratively move the centers to minimize the total within cluster variance (data-center distance) "  
+                          "- Bottom-up agglomerative clustering
+          - Can use different metric (Euclidean-, Pearson distance) 
+          - Generates dendrograms that highlight similar patterns in the data set
+          - Often combined to heatmaps graphical representation"  
                           
                  )
                ) #end tabsetPanel
@@ -271,21 +275,22 @@ With the Matrix of Dissimilarity the similarity in the dataset can be evaluated.
                 # Tab Info ----
                  tabPanel("Informations",
                           h4("What it is:"),
-                          "Unsupervised, linear, non-parametric method.",
-                          
-                          h4("When:"),
-                          "First exploration of multidimensional data (no assumptions needed). Data driven!",
-                          
+                          "Principal Component Analysis (PCA)
+           Unsupervised, linear, non-parametric method
+          Definition: Principal Component Analysis (PCA) is an unsupervised, non-parametric statistical 
+          technique primarily used for dimensionality reduction in machine learning. High dimensionality 
+          means that the dataset has a large number of features. ... PCA can also be used to filter 
+          noisy datasets, such as image compression. Source: https://medium.com/apprentice-journal/pca-application-in-machine-learning-4827c07a61db",
+                          h4("When to use it:"),
+                          "First exploration of multidimensional data (no assumptions needed). 'Data driven'!",
                           h4("What it does:"),
-                          "PCA reduces the dimensionality of a dataset in order to be more understandable representation.",
-                          
+                          "PCA reduces the dimensionality of a dataset to a more understandable representation",
                           h4("How it does this"),
-                          "Find new axes (principal components) that represent the data space in a reduced set of dimensions 
-                          in order capture the most important information in the data.",
-                          h4(""),
-                          "Capture the maximal variance of the data.",
-                          h4(""),
-                          "Highlight the global patterns in the data set." 
+                          "- Find new axes (principal components) that represent the data space in a reduced set of 
+            dimensions to capture the most important information in the data
+         - Capture the maximal variance of the data
+         - Highlight the global patterns in the data set
+         Conclusion: Data organization method for grouping variables with similar behaviour"  
   
                  ) #end tabPanel
                ) #end tabsetPanel
@@ -317,21 +322,25 @@ With the Matrix of Dissimilarity the similarity in the dataset can be evaluated.
                  ),
                  tabPanel("Informations",
                           h4("What it is:"),
-                          "Unsupervised, linear, non-parametric method.",
-                          
-                          h4("When:"),
-                          "First exploration of multidimensional data (no assumptions needed). Data driven!",
-                          
+                          "t-Distributed Stochastic Neighbor Embedding (TSNE)
+         Unsupervised, non-linear, parametric method for dimensionality reduction
+         Definition: t-Distributed Stochastic Neighbor Embedding (t-SNE) 
+         is a non-linear technique for dimensionality reduction that is 
+         particularly well suited for the visualization of high-dimensional datasets. 
+         It is extensively applied in image processing, NLP, genomic data and speech processing.
+         Source: https://www.datacamp.com/community/tutorials/introduction-t-sne",
+                          h4("When to use it:"),
+                          "Exploration & visualization of data, well-suited for high-dimensional data",
                           h4("What it does:"),
-                          "PCA reduces the dimensionality of a dataset in order to be more understandable representation.",
-                          
+                          "- Embeds high-dimensional data in a low-dimensional space to visualize
+          - tSNE minimizes the difference between the similarity of points in high & in low-dimensional space
+            (according to a conditional probability ruled by a probability distribution)",
                           h4("How it does this"),
-                          "Find new axes (principal components) that represent the data space in a reduced set of dimensions 
-                          in order capture the most important information in the data.",
-                          h4(""),
-                          "Capture the maximal variance of the data.",
-                          h4(""),
-                          "Highlight the global patterns in the data set." 
+                          " -Minimize distributions divergence (Kullback-Leibler divergence, relative entropy) between
+             - a similarity distribution of multi-dimensional input objects and
+             - a similarity distribution of the corresponding low-dimensional points using a gradient descent
+             - using a gradient descent
+            Conclusion: Data organization method for grouping variables with similar behaviour (as in PCA, HC, K-means)"  
                           
                  ) #end tabPanel
                ) #end tabsetPanel
@@ -381,21 +390,23 @@ With the Matrix of Dissimilarity the similarity in the dataset can be evaluated.
                  ),
                  tabPanel("Informations",
                           h4("What it is:"),
-                          "Unsupervised, linear, non-parametric method.",
-
-                          h4("When:"),
-                          "First exploration of multidimensional data (no assumptions needed). Data driven!",
-
+                          "Self-Organizing Maps
+          - Unsupervised, nonlinear, parametric method
+          - Type of artificial neural network
+          - Somewhat similar to K-means (SOMs with a small number of nodes behave similar to K-means) 
+          - Somewhat similar to PCA (can be considered a nonlinear generalization of PCA)",
+                          h4("When to use it:"),
+                          "For data visualization of high-dimensional data",
                           h4("What it does:"),
-                          "PCA reduces the dimensionality of a dataset in order to be more understandable representation.",
-
+                          "- Reduces the dimensionality of a dataset - similar to PCA, tSNE
+          - Trains a neural network such that parts of it become specifically responsive to certain input patterns 
+          - Produces a low-dimensional, discrete representation (= map) of the input space of the training samples 
+          - Mapping from a higher-dimensional input space to a lower-dimensional map space",
                           h4("How it does this"),
-                          "Find new axes (principal components) that represent the data space in a reduced set of dimensions
-                          in order capture the most important information in the data.",
-                          h4(""),
-                          "Capture the maximal variance of the data.",
-                          h4(""),
-                          "Highlight the global patterns in the data set."
+                          "- Uses competitive learning (unlike other artificial neural networks, that use error correction learning like 
+            backpropagation & gradient descent)
+          - Trained SOMs classify inputs by finding the node with the closest distance (smallest metric) to the input"  
+                          
 
                  ) #end tabPanel
                ) #end tabsetPanel
