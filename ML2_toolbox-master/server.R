@@ -181,7 +181,7 @@ function(input, output,session) {
                       choices = names(df), selected = names(df)[2])
     updateSelectInput(session, inputId = 'category.tSNE', label = 'Select a category',
                       choices = names(df), selected = names(df))
-    updateSelectInput(session, inputId = 'category.SOMs', label = 'Select a set of feature to be classified',
+    updateSelectInput(session, inputId = 'category.SOMs', label = 'Delete the features that should not be classified',
                       choices = names(df), selected = names(df))   
     observe({
       updateSelectInput(session, inputId = 'property.SOMs',
@@ -362,6 +362,18 @@ function(input, output,session) {
       theme_minimal()
   })
   
+
+  # Plot biplot 2 ---- 
+  output$circPlot <- renderPlot({   
+    pr.out <- pca.out()
+    #biplot without observations, circumference of the correlation circle ####
+    fviz_pca_var(pr.out, col.var="contrib") +
+      
+    scale_color_gradient2(low="blue", mid="violet", high="red", midpoint=input$slider_midpoint) +
+    
+    theme_minimal()
+    })
+  
   # Plot stars ----
   output$starPlot <- renderPlot({
     df <- readData()
@@ -416,7 +428,7 @@ function(input, output,session) {
     
     #rest data set
     rest.data <- data_unique[, ! names(data_unique) %in% category, drop = F]
-    rest.data <- convertFactorToNumeric(rest.data)
+    #rest.data <- convertFactorToNumeric(rest.data)
     rest.data.matrix <- as.matrix(scale(rest.data))
     
     return(rest.data.matrix)
@@ -429,7 +441,7 @@ function(input, output,session) {
     data <- readData()
     
     # Remove duplicates in data:
-    data_unique <- unique(data)
+    data_unique <- unique(data.frame(data))
     
     #separate data set in cat. and rest
     category <- input$category.tSNE
@@ -444,21 +456,35 @@ function(input, output,session) {
   # Plot output ----
   output$tSNEPlot <- renderPlotly({
     
-    cat.data <- select.tsne.col.data()
+    cat.data <- as.matrix (select.tsne.col.data())
     rest.data.matrix <- select.tsne.rest.data.matrix()
+    
     dim <- input$slider_dim
     perplexity <- input$slider_perplexity
     max_iter <- input$slider_max_iter
     category <- input$category.tSNE
     
+    #find index from duplicated
+    index.duplicated<-which(duplicated(rest.data.matrix) | duplicated(rest.data.matrix[nrow(rest.data.matrix):1, ])[nrow(rest.data.matrix):1])
+    
+    if(length(index.duplicated) == 0) {
+      unique.cat.data.unique <- cat.data
+      unique.rest.data.matrix <- rest.data.matrix
+    }else{
+      #delete duplicated lines from category vector
+      unique.cat.data.unique <-cat.data[-index.duplicated,]
+      unique.rest.data.matrix <- rest.data.matrix[-index.duplicated,]
+    }
+    
+    
     # For plotting evaluation against colorcode # category (~ classification solution) 
-    row_label <- as.factor(rownames(rest.data.matrix)) #label from rows.....
-    levels_category<-(as.factor(cat.data))# convert the categorx to levels
+    row_label <- as.factor(rownames(unique.cat.data.unique)) #label from rows.....
+    levels_category<- as.factor(unique.cat.data.unique)# convert the category to levels
     colors <- rainbow(nlevels(levels_category))#set color palete for the category
     colors <- colors[as.numeric(levels_category)] #set colors to the chosen category
     
     # Run tSNE:
-    tsne <- Rtsne(rest.data.matrix, dims = dim,
+    tsne <- Rtsne(unique.rest.data.matrix, dims = dim,
                   perplexity=perplexity, verbose=TRUE,
                   max_iter = max_iter)
     
@@ -470,7 +496,7 @@ function(input, output,session) {
     #      col=colors[row_label])
    
     p<- plot_ly()
-    p <- add_trace(p, x = tsne.df$X1, y =tsne.df$X2, z=tsne.df$X3, color=as.factor(cat.data) )
+    p <- add_trace(p, x = tsne.df$X1, y =tsne.df$X2, z=tsne.df$X3, color=as.factor(unique.cat.data.unique) )
     p
     
   })
@@ -566,12 +592,14 @@ function(input, output,session) {
   # Plot mapping ----
   output$somsPlot.mapping <- renderPlot({
     
-    cat.data <- select.col.soms()
+    cat.data <- input$property.SOMs #variable to be classified
     rest.data.matrix <- select.rest.soms()
+    
+    categorie <- rest.data.matrix[, c(cat.data)]
     
     # For plotting evaluation against colorcode # category (~ classification solution) 
     row_label <- as.factor(rownames(rest.data.matrix)) # set the rownames as factor
-    levels_category<-(as.factor(cat.data))# convert the categorx to levels
+    levels_category<-(as.factor(categorie))# convert the categorx to levels
     colors <- rainbow(nlevels(levels_category))#set color palete for the category 
     colors <- colors[as.numeric(levels_category)] #set colors to the chosen category
 
@@ -579,7 +607,6 @@ function(input, output,session) {
          col=colors[row_label])
     
   })
-  
   
   # Plot dist.neighbours ----
   output$somsPlot.dist <- renderPlot({
@@ -639,14 +666,20 @@ function(input, output,session) {
                         'lightsalmon3', 'tomato2', 'red4')
     
     rest.data.matrix <- select.rest.soms()
-    row_label <- as.factor(rownames(rest.data.matrix)) #label from rows.....
-    col <- rainbow(nlevels(row_label))#set color palete for the category 
-   
+
+    cat.data <- input$property.SOMs #variable to be classified
     
+    categorie <- rest.data.matrix[, c(cat.data)]
+    
+    row_label <- as.factor(rownames(rest.data.matrix)) # set the rownames as factor
+    levels_category<-(as.factor(categorie))# convert the categorx to levels
+    colors <- rainbow(nlevels(levels_category))#set color palete for the category 
+    colors <- colors[as.numeric(levels_category)] #set colors to the chosen category
+   
     som_cluster <- som_cluster(input$soms.tree.h)
     
     plot(som.model(), type="mapping",
-         bgcol = pretty_palette[som_cluster], col=col)
+         bgcol = pretty_palette[som_cluster], col=colors[row_label])
     add.cluster.boundaries(som.model(),som_cluster)
 
   })

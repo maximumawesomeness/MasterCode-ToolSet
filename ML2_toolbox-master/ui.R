@@ -71,8 +71,12 @@ fluidPage(
                  tableOutput("contents"),
                tags$hr(),
                h4("Data Set"),
-               "The data set doesn't contain NA values. All the values are numeric. It contains 14 columns (including the index)."
-              
+               "The data set doesn't contain NA values. All the values are numeric. It contains 14 columns (including the index).",
+               "Unfortunatelly this app accepts only numerical data set without NAs.",
+               h4("IMPORTANT"),
+               "All the methods used are computally expensive. For this reason, it takes time until the plots are shown.",
+               "It could be that before the plots are shown, a error is to be seem. This error disappears as soon as the run process of a method is over.",
+               "Just have patience!"
                  
                )
                
@@ -81,8 +85,6 @@ fluidPage(
             
              
     ), # finish TAB UPLOAD ----
-    
-    
     
     
     # TAB K-MEANS   ----   
@@ -250,16 +252,20 @@ With the Matrix of Dissimilarity the similarity in the dataset can be evaluated.
                           
                           
                           
-                          plotOutput("biPlot",width = "130%",height="800px"),
+                          plotOutput("biPlot",width = "100%",height="800px"),
+                          plotOutput("circPlot",width = "100%",height="800px"),
+                          
                           sliderInput("slider_midpoint", "midpoint:", 0, 10 , 0.5,step = 0.1),
                           pre(includeText("pcaPlotBiplot.txt")),
                           
                           plotOutput("scree.pca.Plot"),
+                       
                           plotOutput("pvePlot"),
+                       
                           plotOutput("cumulative.pvePlot"),
                           pre(includeText("pcaPlotCPVE.txt")),
-                          plotOutput("starPlot"),
-                          pre(includeText("pcaPlotStar.txt"))
+                          #plotOutput("starPlot"),
+                          #pre(includeText("pcaPlotStar.txt"))
                   
                  ),
                 # Tab Info ----
@@ -306,10 +312,7 @@ With the Matrix of Dissimilarity the similarity in the dataset can be evaluated.
                           h4("tSNE"),
                           "Here we have an unsupervised, non-linear, parametric method for dimensionality reduction useful for Exploration & visualization of data and well-suited for high-dimensional data. tSNE minimizes the difference between the similarity of points in high & in low-dimensional space. It is easy to apply but not always intuitive to interpret the plots. The output can be different with every time the user runs the code.Distances have (almost) no meaning.",
                           tags$hr(),
-                          
-                          
-                          ## Error message: function plotlyOutput not found
-                          #plotlyOutput("tSNEPlot", width = "130%"),
+                          plotlyOutput("tSNEPlot"),
                           pre(includeText("tSNEPlottSNE.txt"))
                  ),
                  tabPanel("Informations",
@@ -340,7 +343,7 @@ With the Matrix of Dissimilarity the similarity in the dataset can be evaluated.
     tabPanel("SOMs",
              #SIDEBAR PANEL
              sidebarPanel(
-               selectInput('category.SOMs', 'Select a set of feature to be classified', "",multiple = TRUE),
+               selectInput('category.SOMs', 'Delete the features that should not be classified', "",multiple = TRUE),
                sliderInput("slider_xdim", "xdim", 1, 50 , 4),
                sliderInput("slider_ydim", "ydim:", 1, 50 , 4),
                checkboxInput("check_scaled", label = "Check if you want scaled data", value = TRUE),
@@ -353,23 +356,21 @@ With the Matrix of Dissimilarity the similarity in the dataset can be evaluated.
                           h4("SOMs"),
                           "SOM is an unsupervised, nonlinear, parametric method and can be considered as an artificial neural network. It includes mapping from a higher-dimensional input space to a lower-dimensional map space with competitive learning and therefore reduces dimensionality of a datasets. Neural network uses competitive learning. It is used for data visualization of high-dimensional data. This method is somewhat similar to K-means (SOMs with a small number of nodes behave similar to K-means) and similar to PCA as it can be considered to be a nonlinear generalization of PCA.",
                           tags$hr(),
-
-                          
-                          
-                          
-                          
-                          
+     
                           plotOutput("somsPlot.change"),
                           pre(includeText("somsPlotChange.txt")),
                           plotOutput("somsPlot.count"),
                           pre(includeText("somsPlotCount.txt")),
-                          plotOutput("somsPlot.mapping"),
-                          pre(includeText("somsPlotMapping.txt")),
+         
                           plotOutput("somsPlot.dist"),
                           pre(includeText("somsPlotDist.txt")),
                           plotOutput("somsPlot.codes"),
                           pre(includeText("somsPlotCodes.txt")),
+                          
                           selectInput('property.SOMs', 'Select a feature to be classified', ""),
+                          plotOutput("somsPlot.mapping"),
+                          pre(includeText("somsPlotMapping.txt")),
+                          
                           plotOutput("somsPlot.property"),
                           pre(includeText("somsPlotProperty.txt")),
                           plotOutput("somsPlot.tree",width = "150%"),
