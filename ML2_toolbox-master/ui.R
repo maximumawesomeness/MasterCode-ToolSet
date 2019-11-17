@@ -255,9 +255,7 @@ With the Matrix of Dissimilarity the similarity in the dataset can be evaluated.
                           pre(includeText("pcaPlotBiplot.txt")),
                           
                           plotOutput("scree.pca.Plot"),
-                          pre(includeText("pcaPlotBiplot.txt")),
                           plotOutput("pvePlot"),
-                          pre(includeText("pcaPlotPVE.txt")),
                           plotOutput("cumulative.pvePlot"),
                           pre(includeText("pcaPlotCPVE.txt")),
                           plotOutput("starPlot"),
