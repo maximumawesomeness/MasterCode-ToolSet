@@ -1,7 +1,7 @@
 # Crazy Data Science Toolset for Unsupervised Data Daten
 
 Toolbox to apply unsupervised learning methods with R in Shiny by students of 
- [Master of Applied Information and Data Science](https://www.hslu.ch/en/lucerne-school-of-business/degree-programmes/master/applied-information-and-data-science/) at Hochschule Luzern.
+ [Master of Applied Information and Data Science](https://www.hslu.ch/en/lucerne-school-of-business/degree-programmes/master/applied-information-and-data-science/) at Hochschule Luzern. Please compute the init file first before you load the toolset. There is the wine.csv dataset that we used for our interpretations.
 
 
 ## Team
